@@ -4,8 +4,6 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from collections import namedtuple
 
-import click
-
 
 FMT = "%Y/%m/%d"
 Trip = namedtuple("Trip", "tag start end")
@@ -107,7 +105,6 @@ def check_scenario(trips):
         )
 
 
-@click.command()
 def main():
     saved = Path("trips.txt")
     if saved.is_file():
