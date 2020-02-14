@@ -4,8 +4,11 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from collections import namedtuple
 
+import matplotlib.pyplot as plt
+
 
 FMT = "%Y/%m/%d"
+LIM = 180
 Trip = namedtuple("Trip", "tag start end")
 
 
@@ -67,6 +70,20 @@ def count_days(trips, from_date, to_date, extra=None):
     return days_out
 
 
+def chart(trips, to_date):
+    dates = [to_date - timedelta(days=d) for d in range(365)]
+    y = []
+    y = [count_days(trips, d - timedelta(days=365), d) for d in dates]
+    line_limit = [LIM for x in dates]
+    fig, ax = plt.subplots()
+    plt.fill_between(dates, y, color="skyblue", alpha=0.4)
+    plt.plot(dates, y)
+    plt.plot(dates, line_limit, color="red")
+    ax.set_ylim([0, 200])
+    ax.set_yticks([0, 30, 60, 90, 120, 150, 180])
+    plt.show(block=False)
+
+
 def check_status(trips):
     now = datetime.now()
     year_ago = now - timedelta(days=365)
@@ -79,6 +96,7 @@ def check_future(trips):
     year_before = end_day - timedelta(days=365)
     days_out = count_days(trips, year_before, end_day)
     print(f"Total duration out of UK in 365 days until last trip ends: {days_out} days")
+    chart(trips, end_day)
 
 
 def check_scenario(trips):
