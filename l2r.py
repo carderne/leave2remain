@@ -33,11 +33,9 @@ def parse_dates(trips):
     return trips
 
 
-def count_days(trips, from_date, to_date, extra=None):
+def count_days(trips, from_date, to_date):
     days_out = 0
-    for trip in trips + [extra]:
-        if not trip:
-            continue
+    for trip in trips:
         if trip.end > from_date and trip.start < to_date:
             start = trip.start if trip.start > from_date else from_date
             end = trip.end if trip.end < to_date else to_date
@@ -51,9 +49,8 @@ def chart(trips):
     start_day = trips[0].start
     end_day = trips[-1].end
     num_days = (end_day - start_day).days
-    dates = sorted([end_day - timedelta(days=d) for d in range(num_days)])
 
-    y = []
+    dates = sorted([end_day - timedelta(days=d) for d in range(num_days)])
     y = [count_days(trips, d - timedelta(days=365), d) for d in dates]
     line_limit = [LIM for x in dates]
 
@@ -78,7 +75,7 @@ def chart(trips):
         trip_y = [LIM for d in trip_dates]
         plt.fill_between(trip_dates, trip_y, color="gray", alpha=0.1)
         plt.text(
-            trip.end - timedelta(days=trip_len / 2),
+            trip.start + timedelta(days=trip_len / 2),
             LIM - 15,
             trip.tag,
             rotation=90,
@@ -106,7 +103,7 @@ def chart(trips):
     plt.show()
 
 
-def main():
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         saved = Path(sys.argv[1])
     else:
@@ -115,10 +112,6 @@ def main():
         trips = load_trips(saved)
     else:
         print(f"{saved} is not a file!")
-        return
+        sys.exit()
     trips = parse_dates(trips)
     chart(trips)
-
-
-if __name__ == "__main__":
-    main()
