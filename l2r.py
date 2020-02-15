@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 from collections import namedtuple
 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 
 FMT = "%Y/%m/%d"
@@ -16,32 +18,6 @@ def load_trips(saved):
     with open(saved) as f:
         lines = f.readlines()
     trips = [x.strip() for x in lines]
-    return trips
-
-
-def save_trips(trips, saved):
-    with open(saved, "w") as f:
-        for trip in trips:
-            tag = trip.tag
-            start = datetime.strftime(trip.start, FMT)
-            end = datetime.strftime(trip.end, FMT)
-            print(f"{tag}: {start} - {end}", file=f)
-
-
-def get_trips():
-    print(
-        f"\nEnter OUT (past and future) dates in the following format:"
-        f"\n\ttag: from - to"
-        f"\neg\tsailing: 2019/05/03 - 2019/05/20"
-        f"\nLeave blank and press enter to go to next step"
-    )
-    trips = []
-    while True:
-        trip = str(input("-- "))
-        if len(trip) == 0:
-            break
-        trips.append(trip)
-    print()
     return trips
 
 
@@ -70,70 +46,47 @@ def count_days(trips, from_date, to_date, extra=None):
     return days_out
 
 
-def chart(trips, to_date):
-    dates = [to_date - timedelta(days=d) for d in range(365)]
+def chart(trips):
+    start_day = trips[0].start
+    end_day = trips[-1].end
+    num_days = (end_day - start_day).days + 10
+    dates = sorted([end_day - timedelta(days=d) for d in range(num_days)])
     y = []
     y = [count_days(trips, d - timedelta(days=365), d) for d in dates]
     line_limit = [LIM for x in dates]
-    fig, ax = plt.subplots()
+
+    fig, ax = plt.subplots(figsize=(20, 10))
     plt.fill_between(dates, y, color="skyblue", alpha=0.4)
     plt.plot(dates, y)
     plt.plot(dates, line_limit, color="red")
+    ax.set_xlim([dates[0], dates[-1]])
     ax.set_ylim([0, 200])
     ax.set_yticks([0, 30, 60, 90, 120, 150, 180])
-    plt.show(block=False)
 
+    ax.xaxis.set_major_locator(mdates.YearLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+    ax.xaxis.set_minor_locator(mdates.MonthLocator())
+    ax.xaxis.set_minor_formatter(mdates.DateFormatter("%b"))
+    ax.format_xdata = mdates.DateFormatter("%Y-%m-%d")
+    ax.xaxis.set_tick_params(which="major", pad=15)
+    ax.tick_params(axis='both', which='major', labelsize=10)
+    ax.tick_params(axis='both', which='minor', labelsize=8)
 
-def check_status(trips):
-    now = datetime.now()
-    year_ago = now - timedelta(days=365)
-    days_out = count_days(trips, year_ago, now)
-    print(f"Total duration out of UK in last 365 days: {days_out} days")
-
-
-def check_future(trips):
-    end_day = trips[-1].end
-    year_before = end_day - timedelta(days=365)
-    days_out = count_days(trips, year_before, end_day)
-    print(f"Total duration out of UK in 365 days until last trip ends: {days_out} days")
-    chart(trips, end_day)
-
-
-def check_scenario(trips):
-    print(
-        f"\nEnter dates for a potential future trip"
-        f"\neg\t2020/12/24 - 2021/02/02"
-        f"\nLeave blank and hit Enter to quit"
-    )
-    while True:
-        planned = input("-- ").replace(" ", "")
-        if len(planned) == 0:
-            break
-        start, end = planned.split("-")
-        start = datetime.strptime(start, FMT)
-        end = datetime.strptime(end, FMT)
-        planned = Trip("planned", start, end)
-
-        year_before = end - timedelta(days=365)
-        days_out = count_days(trips, year_before, end, extra=planned)
-        print(
-            f"Total duration out of UK in 365 days until potential trip ends: "
-            f"{days_out} days"
-            f"\nTry another?"
-        )
+    plt.show()
 
 
 def main():
-    saved = Path("trips.txt")
+    if len(sys.argv) > 1:
+        saved = Path(sys.argv[1])
+    else:
+        saved = Path("trips.txt")
     if saved.is_file():
         trips = load_trips(saved)
     else:
-        trips = get_trips()
+        print(f"{saved} is not a file!")
+        return
     trips = parse_dates(trips)
-    save_trips(trips, saved)
-    check_status(trips)
-    check_future(trips)
-    check_scenario(trips)
+    chart(trips)
 
 
 if __name__ == "__main__":
