@@ -42,26 +42,57 @@ def count_days(trips, from_date, to_date, extra=None):
             start = trip.start if trip.start > from_date else from_date
             end = trip.end if trip.end < to_date else to_date
             duration = end - start
-            days_out += duration.days + 1
+            days_out += duration.days
     return days_out
 
 
 def chart(trips):
+    now = datetime.now()
     start_day = trips[0].start
     end_day = trips[-1].end
-    num_days = (end_day - start_day).days + 10
+    num_days = (end_day - start_day).days
     dates = sorted([end_day - timedelta(days=d) for d in range(num_days)])
+
     y = []
     y = [count_days(trips, d - timedelta(days=365), d) for d in dates]
     line_limit = [LIM for x in dates]
 
+    for i, d in enumerate(dates):
+        if d > now:
+            past_dates = dates[:i]
+            past_y = y[:i]
+            fut_dates = dates[i:]
+            fut_y = y[i:]
+            break
+
     fig, ax = plt.subplots(figsize=(20, 10))
-    plt.fill_between(dates, y, color="skyblue", alpha=0.4)
-    plt.plot(dates, y)
-    plt.plot(dates, line_limit, color="red")
+    plt.fill_between(past_dates, past_y, color="blue", alpha=0.2)
+    plt.plot(past_dates, past_y, color="blue", alpha=0.7)
+    plt.fill_between(fut_dates, fut_y, color="green", alpha=0.2)
+    plt.plot(fut_dates, fut_y, color="green", alpha=0.7)
+    plt.plot(dates, line_limit, color="black", linewidth=5)
+
+    for trip in trips:
+        trip_len = (trip.end - trip.start).days
+        trip_dates = [trip.start + timedelta(days=d) for d in range(trip_len)]
+        trip_y = [LIM for d in trip_dates]
+        plt.fill_between(trip_dates, trip_y, color="gray", alpha=0.1)
+        plt.text(
+            trip.end - timedelta(days=trip_len / 2),
+            LIM - 15,
+            trip.tag,
+            rotation=90,
+            horizontalalignment="center",
+        )
+
     ax.set_xlim([dates[0], dates[-1]])
-    ax.set_ylim([0, 200])
+    ax.set_ylim([0, 180])
     ax.set_yticks([0, 30, 60, 90, 120, 150, 180])
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+    ax.yaxis.set_tick_params(length=0)
 
     ax.xaxis.set_major_locator(mdates.YearLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
@@ -69,8 +100,8 @@ def chart(trips):
     ax.xaxis.set_minor_formatter(mdates.DateFormatter("%b"))
     ax.format_xdata = mdates.DateFormatter("%Y-%m-%d")
     ax.xaxis.set_tick_params(which="major", pad=15)
-    ax.tick_params(axis='both', which='major', labelsize=10)
-    ax.tick_params(axis='both', which='minor', labelsize=8)
+    ax.tick_params(axis="both", which="major", labelsize=14)
+    ax.tick_params(axis="both", which="minor", labelsize=10)
 
     plt.show()
 
