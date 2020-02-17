@@ -1,6 +1,7 @@
 /* global Chart */
 
-const MIL_IN_DAY = (1000*60*60*24);
+const MS_PER_DAY = (1000*60*60*24);
+const LIM = 180;
 
 let textarea = document.getElementById("trips");
 let ctx = document.getElementById("canvas");
@@ -24,35 +25,92 @@ function update() {
 }
 
 function makeChart(data) {
-  data = {
+  let line = data.line;
+  let tripBars = data.tripBars;
+
+  let datasets = [];
+  let lineDataset = {
     label: "data",
-    data: data,
+    data: line,
     borderColor: "rgba(57, 162, 174, 1)",
     backgroundColor: "rgba(57, 162, 174, 0.2)",
     borderCapStyle: "round",
     borderWidth: 4,
     pointBorderWidth: 0,
     pointBackgroundColor: "rgba(0, 0, 0, 0)",
-    pointBorderColor: "rgba(0, 0, 0, 0)"
+    pointBorderColor: "rgba(0, 0, 0, 0)",
+    datalabels: {
+      display: false
+    }
   };
+  datasets.push(lineDataset);
+
+  tripBars.forEach(function(tripBar) {
+    datasets.push({
+      label: tripBar.tag,
+      data: tripBar.bar,
+      pointBorderWidth: 0,
+      pointBackgroundColor: "rgba(0, 0, 0, 0)",
+      pointBorderColor: "rgba(0, 0, 0, 0)",
+      datalabels: {
+        color: "black",
+        display: "auto",
+        rotation: -90,
+        align: "right",
+        offset: 10,
+        formatter: function(value) {
+          console.log("HERE");
+          console.log(value);
+          console.log(tripBar.bar);
+          if (value.x < tripBar.bar[1].x) {
+            return tripBar.tag;
+          } else {
+            return "";
+          }
+        }
+      }
+    });
+  });
+
+  let todayDataset = {
+    label: "today",
+    data: [
+      {x: new Date(), y: 0},
+      {x: new Date(), y: LIM}
+    ],
+    borderColor: "black",
+    backgroundColor: "black",
+    borderCapStyle: "square",
+    borderWidth: 2,
+    pointBorderWidth: 0,
+    pointBackgroundColor: "rgba(0, 0, 0, 0)",
+    pointBorderColor: "rgba(0, 0, 0, 0)",
+    datalabels: {
+      display: false
+    }
+  };
+  datasets.push(todayDataset);
+
   if (chart == undefined) {
     chart = new Chart(ctx, {
       type: "line",
-      data: { datasets: [data] },
+      data: { datasets: datasets },
       options: {
         scales: {
           xAxes: [{
             type: "time",
+            time: {
+              unit: "month",
+              minUnit: "month",
+              stepSize: 1
+            }
           }],
           yAxes: [{
-            time: {
-              unit: "month"
-            },
             ticks: {
               beginAtZero: true,
               maxTicksLimit: 8,
               stepSize: 30,
-              suggestedMax: 180
+              suggestedMax: LIM
             }
           }]
         },
@@ -78,16 +136,27 @@ function makeChart(data) {
 function createArr(trips) {
   let startDay = trips[0].start;
   let endDay = trips[trips.length - 1].end;
-  let numDays = (endDay - startDay) / MIL_IN_DAY;
+  let numDays = (endDay - startDay) / MS_PER_DAY;
 
   let data = [];
   for (let d = 0; d < numDays; d++) {
-    let date = new Date(startDay.getTime() + d * MIL_IN_DAY);
-    let from = new Date(date.getTime() - MIL_IN_DAY*365);
+    let date = new Date(startDay.getTime() + d * MS_PER_DAY);
+    let from = new Date(date.getTime() - MS_PER_DAY*365);
     let out = countDays(trips, from, date);
     data.push({x: date, y: out});
   }
-  return data;
+
+  let tripBars = [];
+  trips.forEach(function(trip) {
+    let bar = [];
+    let dates = [trip.start, trip.end];
+    dates.forEach(function(date) {
+      bar.push({x: date, y: LIM-20});
+    });
+    tripBars.push({"tag": trip.tag, "bar": bar});
+  });
+
+  return {"line": data, "tripBars": tripBars};
 }
 
 function parse(text) {
@@ -119,7 +188,7 @@ function countDays(trips, from_date, to_date) {
       daysOut += duration;
     }
   });
-  return daysOut / MIL_IN_DAY;
+  return daysOut / MS_PER_DAY;
 }
 
 window.onload = update;

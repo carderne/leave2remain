@@ -5,7 +5,7 @@ html {
 
 body {
     margin: auto;
-    width: 70%;
+    width: 90%;
 }
 
 .upper {
@@ -16,7 +16,7 @@ body {
 
 #tripsContainer {
     margin: auto;
-    width: 60%;
+    width: 100%;
 }
 
 #canvasContainer {
