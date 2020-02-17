@@ -5,18 +5,25 @@
         <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0">
         <title>leave2remain</title>
         <script src="vendor/Chart.bundle.min.js"></script>
+        <link href="style.css" rel="stylesheet" />
     </head>
     <body>
+        <div class="upper">
         <h1>leave2remain</h1>
+        <p>Calculate whether you meet the minimum presence requirements in the UK.</p>
+        <p>Enter your trips out of the UK in the box below, using exactly the format specified.</p>
+        <p>The chart shows, for each day, how many of the previous 365 days were spent outside the country.</p>
+        <div id="tripsContainer">
         <h2>Enter trips below</h2>
-        <textarea id="trips" rows="10" cols="80">family: 2018/12/01 - 2018/12/28
+        <textarea id="trips" rows="10" cols="40">family: 2018/12/01 - 2018/12/28
 home: 2019/02/01 - 2019/03/25
 france: 2019/06/01 - 2019/06/20
 spain: 2019/10/01 - 2019/10/15
 ireland: 2019/11/01 - 2019/12/01
 ski: 2020/02/01 - 2020/02/20
-potential: 2020/07/01 - 2020/08/20</textarea>
-        <div style="width:75%;">
+potential: 2020/07/01 - 2020/08/20</textarea></div>
+        </div>
+        <div id="canvasContainer">
             <canvas id="canvas"></canvas>
         </div>
         <script src="main.js"></script>

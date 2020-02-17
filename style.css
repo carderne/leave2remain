@@ -1,0 +1,26 @@
+html {
+    font-family: sans-serif;
+    color: #111111;
+}
+
+body {
+    margin: auto;
+    width: 70%;
+}
+
+.upper {
+    text-align: center;
+    margin: auto;
+    width: 100%;
+}
+
+#tripsContainer {
+    margin: auto;
+    width: 60%;
+}
+
+#canvasContainer {
+    margin-top: 20px;
+    position: relative;
+    height: 50vh;
+}

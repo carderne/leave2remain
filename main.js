@@ -3,9 +3,11 @@
 const MIL_IN_DAY = (1000*60*60*24);
 
 let textarea = document.getElementById("trips");
+let ctx = document.getElementById("canvas");
 textarea.onchange = update;
 textarea.onkeyup = update;
 let trips;
+let chart;
 
 function update() {
   let text = textarea.value.replace(/ /g, "").split("\n");
@@ -14,34 +16,63 @@ function update() {
     if (newTrips != trips) {
       trips = newTrips;
       let data = createArr(trips);
-      chart(data);
+      makeChart(data);
     }
   } catch (err) {
     // do nothing
   }
 }
 
-function chart(data) {
-  let ctx = document.getElementById("canvas");
+function makeChart(data) {
   data = {
     label: "data",
-    borderColor: "red",
-    data: data
+    data: data,
+    borderColor: "rgba(57, 162, 174, 1)",
+    backgroundColor: "rgba(57, 162, 174, 0.2)",
+    borderCapStyle: "round",
+    borderWidth: 4,
+    pointBorderWidth: 0,
+    pointBackgroundColor: "rgba(0, 0, 0, 0)",
+    pointBorderColor: "rgba(0, 0, 0, 0)"
   };
-  new Chart(ctx, {
-    type: "line",
-    data: { datasets: [data] },
-    options: {
-      scales: {
-        xAxes: [{
-          type: "time"
-        }]
-      },
-      legend: {
-        display: false
+  if (chart == undefined) {
+    chart = new Chart(ctx, {
+      type: "line",
+      data: { datasets: [data] },
+      options: {
+        scales: {
+          xAxes: [{
+            type: "time",
+          }],
+          yAxes: [{
+            time: {
+              unit: "month"
+            },
+            ticks: {
+              beginAtZero: true,
+              maxTicksLimit: 8,
+              stepSize: 30,
+              suggestedMax: 180
+            }
+          }]
+        },
+        legend: {
+          display: false
+        },
+        showTooltips: false,
+        tooltips: {
+          enabled: false
+        },
+        responsive: true,
+        maintainAspectRatio: false
       }
-    }
-  });
+    });
+  } else {
+    console.log("UPDATING");
+    chart.data.datasets.pop();
+    chart.data.datasets.push(data);
+    chart.update({duration: 0});
+  }
 }
 
 function createArr(trips) {
@@ -65,6 +96,9 @@ function parse(text) {
     let tagDates = line.split(":");
     let tag = tagDates[0];
     let dates = tagDates[1].split("-");
+    if (dates[0].length < 10 || dates[1].length < 10) {
+      throw "Incomplete date";
+    }
     let start = new Date(dates[0].replace(/\//g, "-"));
     let end = new Date(dates[1].replace(/\//g, "-"));
     newTrips.push({"tag": tag, "start": start, "end": end});
