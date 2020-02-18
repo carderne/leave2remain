@@ -2,6 +2,7 @@
 
 const MS_PER_DAY = (1000*60*60*24);
 const LIM = 180;
+const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
 let textarea = document.getElementById("trips");
 let ctx = document.getElementById("canvas");
@@ -45,6 +46,7 @@ function makeChart(data) {
   };
   datasets.push(lineDataset);
 
+  
   tripBars.forEach(function(tripBar) {
     datasets.push({
       label: tripBar.tag,
@@ -53,16 +55,16 @@ function makeChart(data) {
       pointBackgroundColor: "rgba(0, 0, 0, 0)",
       pointBorderColor: "rgba(0, 0, 0, 0)",
       datalabels: {
+        font: {
+          size: vw > 600 ? 16 : 12
+        },
         color: "black",
-        display: "auto",
-        rotation: -90,
-        align: "right",
+        display: "true",
+        rotation: vw > 600 ? 0 : -90,
+        align: "bottom",
         offset: 10,
         formatter: function(value) {
-          console.log("HERE");
-          console.log(value);
-          console.log(tripBar.bar);
-          if (value.x < tripBar.bar[1].x) {
+          if (value.x == tripBar.bar[1].x) {
             return tripBar.tag;
           } else {
             return "";
@@ -98,15 +100,31 @@ function makeChart(data) {
       options: {
         scales: {
           xAxes: [{
+            gridLines: {
+              drawBorder: false,
+              lineWidth: 3,
+              zeroLineWidth: 3,
+              display: true,
+              drawOnChartArea: false,
+            },
             type: "time",
             time: {
               unit: "month",
               minUnit: "month",
               stepSize: 1
+            },
+            ticks: {
+              fontSize: 14
             }
           }],
           yAxes: [{
+            gridLines: {
+              drawBorder: false,
+              lineWidth: 2,
+              zeroLineWidth: 2
+            },
             ticks: {
+              fontSize: 16,
               beginAtZero: true,
               maxTicksLimit: 8,
               stepSize: 30,
@@ -126,7 +144,6 @@ function makeChart(data) {
       }
     });
   } else {
-    console.log("UPDATING");
     chart.data.datasets.pop();
     chart.data.datasets.push(data);
     chart.update({duration: 0});
@@ -149,9 +166,11 @@ function createArr(trips) {
   let tripBars = [];
   trips.forEach(function(trip) {
     let bar = [];
-    let dates = [trip.start, trip.end];
+    let mid = new Date(trip.start.getTime() + (trip.end - trip.start)/2);
+    let dates = [trip.start, mid, trip.end];
+    console.log(dates);
     dates.forEach(function(date) {
-      bar.push({x: date, y: LIM-20});
+      bar.push({x: date, y: LIM});
     });
     tripBars.push({"tag": trip.tag, "bar": bar});
   });
