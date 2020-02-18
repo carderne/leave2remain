@@ -145,7 +145,7 @@ function makeChart(data) {
     });
   } else {
     chart.data.datasets.pop();
-    chart.data.datasets.push(data);
+    chart.data.datasets = datasets;
     chart.update({duration: 0});
   }
 }
@@ -168,7 +168,6 @@ function createArr(trips) {
     let bar = [];
     let mid = new Date(trip.start.getTime() + (trip.end - trip.start)/2);
     let dates = [trip.start, mid, trip.end];
-    console.log(dates);
     dates.forEach(function(date) {
       bar.push({x: date, y: LIM});
     });
