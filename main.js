@@ -3,8 +3,18 @@
 const MS_PER_DAY = (1000*60*60*24);
 const LIM = 180;
 const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+const textarea = document.getElementById("trips");
 
-let textarea = document.getElementById("trips");
+let prevText = document.cookie;
+if (prevText.length > 2) {
+  prevText = prevText
+    .split("=")[1]
+    .replace(/,/g, "\n")
+    .replace(/-/g, " - ")
+    .replace(/:/g, ": ");
+  textarea.value = prevText;
+}
+
 let ctx = document.getElementById("canvas");
 textarea.onchange = update;
 textarea.onkeyup = update;
@@ -19,6 +29,7 @@ function update() {
       trips = newTrips;
       let data = createArr(trips);
       makeChart(data);
+      document.cookie = "text=" + text + ";max-age=31536000";
     }
   } catch (err) {
     // do nothing
