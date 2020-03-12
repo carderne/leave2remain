@@ -29,6 +29,16 @@ body {
     height: 50vh;
 }
 
+.warnings {
+    background-color: rgb(220,220,220);
+    padding: 10px;
+    max-width: 500px;
+}
+
+.warnings p {
+    line-height: 10px;
+}
+
 input {
     width: 30%;
     height: 20px;
@@ -52,4 +62,12 @@ button {
     display: inline-block;
     margin: 10px auto;
     width: 100px;
+}
+
+.green {
+    color: rgb(0,140,0);
+}
+
+.red {
+    color: rgb(140,0,0);
 }

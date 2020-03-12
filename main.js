@@ -44,10 +44,37 @@ function update() {
       trips = newTrips;
       let data = createArr(trips);
       makeChart(data);
+      updateWarnings(data);
       document.cookie = "text=" + tripsToString(trips) + ";max-age=31536000";
     }
   } catch (err) {
     // do nothing
+  }
+}
+
+
+function updateWarnings(data) {
+  let maxOut = data["maxOut"];
+  let last5Out = data["last5Out"];
+  let last12Out = data["last12Out"];
+
+  let ansRolling = document.getElementById("ans-rolling");
+  let ansLast5 = document.getElementById("ans-last5");
+  let ansLast12 = document.getElementById("ans-last12");
+
+  ansRolling.innerHTML = maxOut;
+  if (maxOut > 180) {
+    ansRolling.setAttribute("class", "red");
+  }
+
+  ansLast5.innerHTML = last5Out;
+  if (last5Out > 450) {
+    ansLast5.setAttribute("class", "red");
+  }
+
+  ansLast12.innerHTML = last12Out;
+  if (last12Out > 90) {
+    ansLast12.setAttribute("class", "red");
   }
 }
 
@@ -181,14 +208,24 @@ function createArr(trips) {
   let startDay = trips[0].start;
   let endDay = trips[trips.length - 1].end;
   let numDays = (endDay - startDay) / MS_PER_DAY;
+  let maxOut = 0;
 
   let data = [];
   for (let d = 0; d < numDays; d++) {
     let date = new Date(startDay.getTime() + d * MS_PER_DAY);
     let from = new Date(date.getTime() - MS_PER_DAY*365);
     let out = countDays(trips, from, date);
+    if (out > maxOut) {
+      maxOut = out;
+    }
     data.push({x: date, y: out});
   }
+
+  let today = new Date();
+  let fiveYearsAgo = new Date(today.getTime() - MS_PER_DAY*365*5);
+  let twelveMonthsAgo = new Date(today.getTime() - MS_PER_DAY*365);
+  let last5Out = Math.floor(countDays(trips, fiveYearsAgo, today));
+  let last12Out = Math.floor(countDays(trips, twelveMonthsAgo, today));
 
   let tripBars = [];
   trips.forEach(function(trip) {
@@ -201,7 +238,13 @@ function createArr(trips) {
     tripBars.push({"tag": trip.tag, "bar": bar});
   });
 
-  return {"line": data, "tripBars": tripBars};
+  return {
+    "line": data,
+    "tripBars": tripBars,
+    "maxOut": maxOut,
+    "last5Out": last5Out,
+    "last12Out": last12Out
+  };
 }
 
 
