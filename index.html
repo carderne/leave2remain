@@ -12,20 +12,26 @@
         <div class="row">
             <div class="column">
                 <h1>leave2remain</h1>
-                <p>Calculate whether you meet the continuous presence requirements in the UK to apply for settlement and naturalization. I AM NOT A LAWYER, I made this for myself following these <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/869787/calculating-continuous-leave-v20.0.pdf">two</a> <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/794168/Guide_AN__Naturalisation_Booklet.pdf">documents</a>.</p>
-                <p>My understanding is that for settlemtent you can't be outside the UK more than 180 days in any rolling 12-month period. And for naturalization you can't be outside the UK more than 450 days in the 5-year period, nor more than 90 days in the 12 months before applying.
-                <p>Enter your trips in the fields provided. The chart shows, for each day, how many of the previous 365 days were spent outside the country.</p>
+                <div style="padding-right:20px;">
+                    <p>Calculate whether you meet the continuous presence requirements in the UK to apply for settlement and naturalization. I AM NOT A LAWYER, I made this for myself following these <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/869787/calculating-continuous-leave-v20.0.pdf">two</a> <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/794168/Guide_AN__Naturalisation_Booklet.pdf">documents</a>.</p>
+                    <p>My understanding is that for settlemtent you can't be outside the UK more than 180 days in any rolling 12-month period. And for naturalization you can't be outside the UK more than 450 days in the 5-year period, nor more than 90 days in the 12 months before applying.
+                    <p>Enter your trips in the fields provided. The chart shows, for each day, how many of the previous 365 days were spent outside the country.</p>
+                </div>
                 <div class="warnings">
-                    <p>Most days outside in any 12-month period: <span id="ans-rolling" class="green"></span></p>
-                    <p>Days outside in last 5-year period: <span id="ans-last5" class="green"></span></p>
-                    <p>Days outside in last 12-month period: <span id="ans-last12" class="green"></span></p>
+                    <p><strong>Days outside in...</strong></p>
+                    <p>any 12-month period: <span id="ans-rolling" class="green"></span></p>
+                    <p>last 5 years: <span id="ans-last5" class="green"></span></p>
+                    <p>last 12 months: <span id="ans-last12" class="green"></span></p>
                 </div>
             </div>
             <div class="column">
                 <br>
-                <label class="tag">Tag</label>
-                <label>Start</label>
-                <label>End</label>
+                <br>
+                <div class="cols">
+                    <label class="tag">Tag</label>
+                    <label>Start</label>
+                    <label>End</label>
+                </div>
                 <div id="trips"></div>
                 <div>
                     <button id="less" type="button">less</button>
