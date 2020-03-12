@@ -11,14 +11,21 @@
     <body>
         <div class="row">
             <div class="column">
-            <h1>leave2remain</h1>
+                <h1>leave2remain</h1>
                 <p>Calculate whether you meet the continuous presence requirements in the UK to apply for settlement and naturalization. I AM NOT A LAWYER, I made this for myself following these <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/869787/calculating-continuous-leave-v20.0.pdf">two</a> <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/794168/Guide_AN__Naturalisation_Booklet.pdf">documents</a>.</p>
                 <p>My understanding is that for settlemtent you can't be outside the UK more than 180 days in any 12-month period. And for naturalization you can't be outside the UK more than 450 days in the 5-year period, nor more than 90 days in the 12 months before applying.
                 <p>The chart shows, for each day, how many of the previous 365 days were spent outside the country.</p>
             </div>
             <div class="column">
                 <p>Enter your trips out of the UK in the box, using exactly the format specified.</p>
-                <textarea id="trips" rows="10" cols="45"></textarea>
+                <label class="tag">Tag</label>
+                <label>Start</label>
+                <label>End</label>
+                <div id="trips"></div>
+                <div>
+                    <button id="less" type="button">less</button>
+                    <button id="more" type="button">more</button>
+                </div>
             </div>
         </div>
         <div id="canvasContainer">

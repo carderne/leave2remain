@@ -17,19 +17,39 @@ body {
     flex: 50%;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 800px) {
     .column {
         flex: 100%;
     }
-}
-
-textarea {
-    width: 100%;
-    font-size: 16px;
 }
 
 #canvasContainer {
     margin-top: 20px;
     position: relative;
     height: 50vh;
+}
+
+input {
+    width: 30%;
+    height: 20px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+label {
+    width: 30%;
+    font-size: 16px;
+    float: left;
+    padding: 1px 10px;
+    text-align: center;
+}
+
+.tag {
+    width: 20%;
+}
+
+button {
+    display: inline-block;
+    margin: 10px auto;
+    width: 100px;
 }

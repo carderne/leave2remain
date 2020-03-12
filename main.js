@@ -3,45 +3,54 @@
 const MS_PER_DAY = (1000*60*60*24);
 const LIM = 180;
 const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-const textarea = document.getElementById("trips");
 
-const defaultText = "text= \
-  family:2018/12/01-2018/12/28, \
-  home:2019/02/01-2019/03/25, \
-  france:2019/06/01-2019/06/20, \
-  spain:2019/10/01-2019/10/15, \
-  ireland:2019/11/01-2019/12/01, \
-  potential:2020/07/01-2020/08/20";
-let prevText = document.cookie;
-if (prevText.length < 5) {
-  prevText = defaultText;
-}
-textarea.value = prevText
-  .split("=")[1]
-  .replace(/,/g, "\n")
-  .replace(/-/g, " - ")
-  .replace(/:/g, ": ");
+const divTrips = document.getElementById("trips");
+const more = document.getElementById("more");
+const less = document.getElementById("less");
+const ctx = document.getElementById("canvas");
+more.onclick = addTrip;
+less.onclick = removeTrip;
 
-let ctx = document.getElementById("canvas");
-textarea.onchange = update;
-textarea.onkeyup = update;
 let trips;
 let chart;
+let ii = 0;
+
+let defaultTrips = [
+  {"tag": "Family",  "start": "2018-12-01", "end": "2018-12-28"},
+  {"tag": "Home",    "start": "2019-02-01", "end": "2019-03-25"},
+  {"tag": "France",  "start": "2019-06-01", "end": "2019-06-20"},
+  {"tag": "Spain",   "start": "2019-10-01", "end": "2019-10-15"},
+  {"tag": "Ireland", "start": "2019-11-01", "end": "2019-12-01"},
+  {"tag": "Planned", "start": "2020-07-01", "end": "2020-08-15"},
+];
+
+let prevTrips = document.cookie;
+if (prevTrips.length > 4) {
+  prevTrips = prevTrips
+    .split("=")[1]
+    .split(",");
+  prevTrips.forEach(function(trip, index) {
+    trip = trip.split(":");
+    prevTrips[index] = {"tag": trip[0], "start": trip[1], "end": trip[2]};
+  });
+  defaultTrips = prevTrips;
+}
+
 
 function update() {
-  let text = textarea.value.replace(/ /g, "").split("\n");
   try {
-    let newTrips = parse(text);
+    let newTrips = parseForms();
     if (newTrips != trips) {
       trips = newTrips;
       let data = createArr(trips);
       makeChart(data);
-      document.cookie = "text=" + text + ";max-age=31536000";
+      document.cookie = "text=" + tripsToString(trips) + ";max-age=31536000";
     }
   } catch (err) {
     // do nothing
   }
 }
+
 
 function makeChart(data) {
   let line = data.line;
@@ -195,24 +204,40 @@ function createArr(trips) {
   return {"line": data, "tripBars": tripBars};
 }
 
-function parse(text) {
+
+function parseForms() {
+  let forms = divTrips.childNodes;
   let newTrips = [];
-  text.forEach(function (line) {
-    let tagDates = line.split(":");
-    let tag = tagDates[0];
-    let dates = tagDates[1].split("-");
-    if (dates[0].length < 10 || dates[1].length < 10) {
-      throw "Incomplete date";
+
+  forms.forEach(function(form) {
+    let tag = form.elements[0].value;
+    let start = form.elements[1].value;
+    let end = form.elements[2].value;
+    if (start.length == 10 && end.length == 10) {
+      newTrips.push({
+        "tag": tag,
+        "start": new Date(start),
+        "end": new Date(end)
+      });
     }
-    let start = new Date(dates[0].replace(/\//g, "-"));
-    let end = new Date(dates[1].replace(/\//g, "-"));
-    newTrips.push({"tag": tag, "start": start, "end": end});
   });
   newTrips.sort(function(a, b) {
     return a.start - b.start;
   });
   return newTrips;
 }
+
+
+function tripsToString(trips) {
+  let tripString = "";
+  trips.forEach(function(trip) {
+    tripString += trip["tag"] + ":" +
+      trip["start"].toISOString().split("T")[0] + ":" +
+      trip["end"].toISOString().split("T")[0] + ",";
+  });
+  return tripString.slice(0, -1); // remove trailing comma
+}
+
 
 function countDays(trips, from_date, to_date) {
   let daysOut = 0;
@@ -227,4 +252,50 @@ function countDays(trips, from_date, to_date) {
   return daysOut / MS_PER_DAY;
 }
 
-window.onload = update;
+
+function removeTrip() {
+  let nodes = divTrips.childNodes;
+  let last = nodes[nodes.length - 1];
+  divTrips.removeChild(last);
+  update();
+}
+
+
+function addTrip(tag="", start="", end="") {
+  if (tag.constructor.name != "String") {
+    tag = "";
+  }
+  let f = document.createElement("form");
+  let itag = document.createElement("input");
+  itag.setAttribute("class", "tag");
+  itag.setAttribute("type", "text");
+  itag.setAttribute("name", "tag" + ii);
+  itag.setAttribute("value", tag);
+  itag.onchange = update;
+  itag.onkeyup = update;
+  let istart = document.createElement("input");
+  istart.setAttribute("type", "date");
+  istart.setAttribute("name", "start" + ii);
+  istart.setAttribute("value", start);
+  istart.onchange = update;
+  let iend = document.createElement("input");
+  iend.setAttribute("type", "date");
+  iend.setAttribute("name", "end" + ii);
+  iend.setAttribute("value", end);
+  iend.onchange = update;
+
+  f.appendChild(itag);
+  f.appendChild(istart);
+  f.appendChild(iend);
+  divTrips.appendChild(f);
+  ii += 1;
+  update();
+}
+
+
+window.onload = function() {
+  defaultTrips.forEach(function(trip) {
+    addTrip(trip["tag"], trip["start"], trip["end"]);
+  });
+  update();
+};
