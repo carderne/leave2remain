@@ -8,15 +8,24 @@ body {
     width: 90%;
 }
 
-.upper {
-    text-align: center;
-    margin: auto;
-    width: 100%;
+.row {
+    display: flex;
+    flex-flow: row wrap;
 }
 
-#tripsContainer {
-    margin: auto;
+.column {
+    flex: 50%;
+}
+
+@media screen and (max-width: 600px) {
+    .column {
+        flex: 100%;
+    }
+}
+
+textarea {
     width: 100%;
+    font-size: 16px;
 }
 
 #canvasContainer {

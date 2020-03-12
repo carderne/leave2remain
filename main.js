@@ -5,15 +5,22 @@ const LIM = 180;
 const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 const textarea = document.getElementById("trips");
 
+const defaultText = "text= \
+  family:2018/12/01-2018/12/28, \
+  home:2019/02/01-2019/03/25, \
+  france:2019/06/01-2019/06/20, \
+  spain:2019/10/01-2019/10/15, \
+  ireland:2019/11/01-2019/12/01, \
+  potential:2020/07/01-2020/08/20";
 let prevText = document.cookie;
-if (prevText.length > 2) {
-  prevText = prevText
-    .split("=")[1]
-    .replace(/,/g, "\n")
-    .replace(/-/g, " - ")
-    .replace(/:/g, ": ");
-  textarea.value = prevText;
+if (prevText.length < 5) {
+  prevText = defaultText;
 }
+textarea.value = prevText
+  .split("=")[1]
+  .replace(/,/g, "\n")
+  .replace(/-/g, " - ")
+  .replace(/:/g, ": ");
 
 let ctx = document.getElementById("canvas");
 textarea.onchange = update;
