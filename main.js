@@ -7,9 +7,11 @@ const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0
 const divTrips = document.getElementById("trips");
 const more = document.getElementById("more");
 const less = document.getElementById("less");
+const clear = document.getElementById("clear");
 const ctx = document.getElementById("canvas");
 more.onclick = addTrip;
 less.onclick = removeTrip;
+clear.onclick = removeAll;
 
 let trips;
 let chart;
@@ -100,7 +102,7 @@ function makeChart(data) {
   };
   datasets.push(lineDataset);
 
-  
+
   tripBars.forEach(function(tripBar) {
     datasets.push({
       label: tripBar.tag,
@@ -300,6 +302,15 @@ function removeTrip() {
   let nodes = divTrips.childNodes;
   let last = nodes[nodes.length - 1];
   divTrips.removeChild(last);
+  update();
+}
+
+
+function removeAll() {
+  while (divTrips.firstChild) {
+    divTrips.removeChild(divTrips.lastChild);
+  }
+  addTrip();
   update();
 }
 
