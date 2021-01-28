@@ -17,12 +17,6 @@ body {
     flex: 50%;
 }
 
-@media screen and (max-width: 800px) {
-    .column {
-        flex: 100%;
-    }
-}
-
 #canvasContainer {
     margin-top: 20px;
     position: relative;
@@ -83,4 +77,14 @@ button {
 
 small {
     font-size: 10px;
+}
+
+@media screen and (max-width: 800px) {
+    .column {
+        flex: 100%;
+    }
+
+    button {
+        width: 30%;
+    }
 }
