@@ -115,7 +115,7 @@ function makeChart(data) {
           size: vw > 600 ? 16 : 12
         },
         color: "black",
-        display: "true",
+        display: true,
         rotation: vw > 600 ? 0 : -90,
         align: "bottom",
         offset: 10,
@@ -136,7 +136,7 @@ function makeChart(data) {
       {x: new Date(), y: 0},
       {x: new Date(), y: LIM}
     ],
-    borderColor: "black",
+    borderColor: "rgba(0, 100, 150, 0.4)",
     backgroundColor: "black",
     borderCapStyle: "square",
     borderWidth: 2,
@@ -144,7 +144,21 @@ function makeChart(data) {
     pointBackgroundColor: "rgba(0, 0, 0, 0)",
     pointBorderColor: "rgba(0, 0, 0, 0)",
     datalabels: {
-      display: false
+      font: {
+        size: vw > 600 ? 18 : 14
+      },
+      color: "black",
+      display: true,
+      rotation: vw > 600 ? 0 : -90,
+      align: "left",
+      offset: -10,
+      formatter: function(value) {
+        if (value.y == LIM) {
+          return "today";
+        } else {
+          return "";
+        }
+      }
     }
   };
   datasets.push(todayDataset);
