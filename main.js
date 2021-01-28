@@ -22,8 +22,8 @@ let defaultTrips = [
   {"tag": "Home",    "start": "2019-02-01", "end": "2019-03-25"},
   {"tag": "France",  "start": "2019-06-01", "end": "2019-06-20"},
   {"tag": "Spain",   "start": "2019-10-01", "end": "2019-10-15"},
-  {"tag": "Ireland", "start": "2019-11-01", "end": "2019-12-01"},
-  {"tag": "Planned", "start": "2020-07-01", "end": "2020-08-15"},
+  {"tag": "Ireland", "start": "2020-02-01", "end": "2020-03-01"},
+  {"tag": "Planned", "start": "2021-07-01", "end": "2021-08-15"},
 ];
 
 let prevTrips = document.cookie;
