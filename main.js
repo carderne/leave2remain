@@ -1,8 +1,11 @@
 /* global Chart */
 
-const MS_PER_DAY = (1000*60*60*24);
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const LIM = 180;
-const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+const vw = Math.max(
+  document.documentElement.clientWidth,
+  window.innerWidth || 0
+);
 
 const divTrips = document.getElementById("trips");
 const more = document.getElementById("more");
@@ -18,26 +21,23 @@ let chart;
 let ii = 0;
 
 let defaultTrips = [
-  {"tag": "Family",  "start": "2018-12-01", "end": "2018-12-28"},
-  {"tag": "Home",    "start": "2019-02-01", "end": "2019-03-25"},
-  {"tag": "France",  "start": "2019-06-01", "end": "2019-06-20"},
-  {"tag": "Spain",   "start": "2019-10-01", "end": "2019-10-15"},
-  {"tag": "Ireland", "start": "2020-02-01", "end": "2020-03-01"},
-  {"tag": "Planned", "start": "2021-07-01", "end": "2021-08-15"},
+  { tag: "Family", start: "2018-12-01", end: "2018-12-28" },
+  { tag: "Home", start: "2019-02-01", end: "2019-03-25" },
+  { tag: "France", start: "2019-06-01", end: "2019-06-20" },
+  { tag: "Spain", start: "2019-10-01", end: "2019-10-15" },
+  { tag: "Ireland", start: "2020-02-01", end: "2020-03-01" },
+  { tag: "Planned", start: "2021-07-01", end: "2021-08-15" },
 ];
 
 let prevTrips = document.cookie;
 if (prevTrips.length > 4) {
-  prevTrips = prevTrips
-    .split("=")[1]
-    .split(",");
-  prevTrips.forEach(function(trip, index) {
+  prevTrips = prevTrips.split("=")[1].split(",");
+  prevTrips.forEach(function (trip, index) {
     trip = trip.split(":");
-    prevTrips[index] = {"tag": trip[0], "start": trip[1], "end": trip[2]};
+    prevTrips[index] = { tag: trip[0], start: trip[1], end: trip[2] };
   });
   defaultTrips = prevTrips;
 }
-
 
 function update() {
   try {
@@ -53,7 +53,6 @@ function update() {
     // do nothing
   }
 }
-
 
 function updateWarnings(data) {
   let maxOut = data["maxOut"];
@@ -80,7 +79,6 @@ function updateWarnings(data) {
   }
 }
 
-
 function makeChart(data) {
   let line = data.line;
   let tripBars = data.tripBars;
@@ -97,13 +95,12 @@ function makeChart(data) {
     pointBackgroundColor: "rgba(0, 0, 0, 0)",
     pointBorderColor: "rgba(0, 0, 0, 0)",
     datalabels: {
-      display: false
-    }
+      display: false,
+    },
   };
   datasets.push(lineDataset);
 
-
-  tripBars.forEach(function(tripBar) {
+  tripBars.forEach(function (tripBar) {
     datasets.push({
       label: tripBar.tag,
       data: tripBar.bar,
@@ -112,29 +109,29 @@ function makeChart(data) {
       pointBorderColor: "rgba(0, 0, 0, 0)",
       datalabels: {
         font: {
-          size: vw > 600 ? 16 : 12
+          size: vw > 600 ? 16 : 12,
         },
         color: "black",
         display: true,
         rotation: vw > 600 ? 0 : -90,
         align: "bottom",
         offset: 10,
-        formatter: function(value) {
+        formatter: function (value) {
           if (value.x == tripBar.bar[1].x) {
             return tripBar.tag;
           } else {
             return "";
           }
-        }
-      }
+        },
+      },
     });
   });
 
   let todayDataset = {
     label: "today",
     data: [
-      {x: new Date(), y: 0},
-      {x: new Date(), y: LIM}
+      { x: new Date(), y: 0 },
+      { x: new Date(), y: LIM },
     ],
     borderColor: "rgba(0, 100, 150, 0.4)",
     backgroundColor: "black",
@@ -145,21 +142,21 @@ function makeChart(data) {
     pointBorderColor: "rgba(0, 0, 0, 0)",
     datalabels: {
       font: {
-        size: vw > 600 ? 18 : 14
+        size: vw > 600 ? 18 : 14,
       },
       color: "black",
       display: true,
       rotation: vw > 600 ? 0 : -90,
       align: "left",
       offset: -10,
-      formatter: function(value) {
+      formatter: function (value) {
         if (value.y == LIM) {
           return "today";
         } else {
           return "";
         }
-      }
-    }
+      },
+    },
   };
   datasets.push(todayDataset);
 
@@ -169,54 +166,58 @@ function makeChart(data) {
       data: { datasets: datasets },
       options: {
         scales: {
-          xAxes: [{
-            gridLines: {
-              drawBorder: false,
-              lineWidth: 3,
-              zeroLineWidth: 3,
-              display: true,
-              drawOnChartArea: false,
+          xAxes: [
+            {
+              gridLines: {
+                drawBorder: false,
+                lineWidth: 3,
+                zeroLineWidth: 3,
+                display: true,
+                drawOnChartArea: false,
+              },
+              type: "time",
+              time: {
+                unit: "month",
+                minUnit: "month",
+                stepSize: 1,
+              },
+              ticks: {
+                fontSize: 14,
+              },
             },
-            type: "time",
-            time: {
-              unit: "month",
-              minUnit: "month",
-              stepSize: 1
+          ],
+          yAxes: [
+            {
+              gridLines: {
+                drawBorder: false,
+                lineWidth: 2,
+                zeroLineWidth: 2,
+              },
+              ticks: {
+                fontSize: 16,
+                beginAtZero: true,
+                maxTicksLimit: 8,
+                stepSize: 30,
+                suggestedMax: LIM,
+              },
             },
-            ticks: {
-              fontSize: 14
-            }
-          }],
-          yAxes: [{
-            gridLines: {
-              drawBorder: false,
-              lineWidth: 2,
-              zeroLineWidth: 2
-            },
-            ticks: {
-              fontSize: 16,
-              beginAtZero: true,
-              maxTicksLimit: 8,
-              stepSize: 30,
-              suggestedMax: LIM
-            }
-          }]
+          ],
         },
         legend: {
-          display: false
+          display: false,
         },
         showTooltips: false,
         tooltips: {
-          enabled: false
+          enabled: false,
         },
         responsive: true,
-        maintainAspectRatio: false
-      }
+        maintainAspectRatio: false,
+      },
     });
   } else {
     chart.data.datasets.pop();
     chart.data.datasets = datasets;
-    chart.update({duration: 0});
+    chart.update({ duration: 0 });
   }
 }
 
@@ -229,74 +230,75 @@ function createArr(trips) {
   let data = [];
   for (let d = 0; d < numDays; d++) {
     let date = new Date(startDay.getTime() + d * MS_PER_DAY);
-    let from = new Date(date.getTime() - MS_PER_DAY*365);
+    let from = new Date(date.getTime() - MS_PER_DAY * 365);
     let out = countDays(trips, from, date);
     if (out > maxOut) {
       maxOut = out;
     }
-    data.push({x: date, y: out});
+    data.push({ x: date, y: out });
   }
 
   let today = new Date();
-  let fiveYearsAgo = new Date(today.getTime() - MS_PER_DAY*365*5);
-  let twelveMonthsAgo = new Date(today.getTime() - MS_PER_DAY*365);
+  let fiveYearsAgo = new Date(today.getTime() - MS_PER_DAY * 365 * 5);
+  let twelveMonthsAgo = new Date(today.getTime() - MS_PER_DAY * 365);
   let last5Out = Math.floor(countDays(trips, fiveYearsAgo, today));
   let last12Out = Math.floor(countDays(trips, twelveMonthsAgo, today));
 
   let tripBars = [];
-  trips.forEach(function(trip) {
+  trips.forEach(function (trip) {
     let bar = [];
-    let mid = new Date(trip.start.getTime() + (trip.end - trip.start)/2);
+    let mid = new Date(trip.start.getTime() + (trip.end - trip.start) / 2);
     let dates = [trip.start, mid, trip.end];
-    dates.forEach(function(date) {
-      bar.push({x: date, y: LIM});
+    dates.forEach(function (date) {
+      bar.push({ x: date, y: LIM });
     });
-    tripBars.push({"tag": trip.tag, "bar": bar});
+    tripBars.push({ tag: trip.tag, bar: bar });
   });
 
   return {
-    "line": data,
-    "tripBars": tripBars,
-    "maxOut": maxOut,
-    "last5Out": last5Out,
-    "last12Out": last12Out
+    line: data,
+    tripBars: tripBars,
+    maxOut: maxOut,
+    last5Out: last5Out,
+    last12Out: last12Out,
   };
 }
-
 
 function parseForms() {
   let forms = divTrips.childNodes;
   let newTrips = [];
 
-  forms.forEach(function(form) {
+  forms.forEach(function (form) {
     let tag = form.elements[0].value;
     let start = form.elements[1].value;
     let end = form.elements[2].value;
     if (start.length == 10 && end.length == 10) {
       newTrips.push({
-        "tag": tag,
-        "start": new Date(start),
-        "end": new Date(end)
+        tag: tag,
+        start: new Date(start),
+        end: new Date(end),
       });
     }
   });
-  newTrips.sort(function(a, b) {
+  newTrips.sort(function (a, b) {
     return a.start - b.start;
   });
   return newTrips;
 }
 
-
 function tripsToString(trips) {
   let tripString = "";
-  trips.forEach(function(trip) {
-    tripString += trip["tag"] + ":" +
-      trip["start"].toISOString().split("T")[0] + ":" +
-      trip["end"].toISOString().split("T")[0] + ",";
+  trips.forEach(function (trip) {
+    tripString +=
+      trip["tag"] +
+      ":" +
+      trip["start"].toISOString().split("T")[0] +
+      ":" +
+      trip["end"].toISOString().split("T")[0] +
+      ",";
   });
   return tripString.slice(0, -1); // remove trailing comma
 }
-
 
 function countDays(trips, from_date, to_date) {
   let daysOut = 0;
@@ -311,14 +313,12 @@ function countDays(trips, from_date, to_date) {
   return daysOut / MS_PER_DAY;
 }
 
-
 function removeTrip() {
   let nodes = divTrips.childNodes;
   let last = nodes[nodes.length - 1];
   divTrips.removeChild(last);
   update();
 }
-
 
 function removeAll() {
   while (divTrips.firstChild) {
@@ -328,8 +328,7 @@ function removeAll() {
   update();
 }
 
-
-function addTrip(tag="", start="", end="") {
+function addTrip(tag = "", start = "", end = "") {
   if (tag.constructor.name != "String") {
     tag = "";
   }
@@ -360,9 +359,8 @@ function addTrip(tag="", start="", end="") {
   update();
 }
 
-
-window.onload = function() {
-  defaultTrips.forEach(function(trip) {
+window.onload = function () {
+  defaultTrips.forEach(function (trip) {
     addTrip(trip["tag"], trip["start"], trip["end"]);
   });
   update();
