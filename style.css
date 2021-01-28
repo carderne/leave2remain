@@ -20,7 +20,7 @@ body {
 #canvasContainer {
     margin-top: 20px;
     position: relative;
-    height: 50vh;
+    height: 40vh;
 }
 
 .warnings {
