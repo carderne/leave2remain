@@ -21,12 +21,12 @@ let chart;
 let ii = 0;
 
 let defaultTrips = [
-  { tag: "Family", start: "2018-12-01", end: "2018-12-28" },
-  { tag: "Home", start: "2019-02-01", end: "2019-03-25" },
-  { tag: "France", start: "2019-06-01", end: "2019-06-20" },
-  { tag: "Spain", start: "2019-10-01", end: "2019-10-15" },
-  { tag: "Ireland", start: "2020-02-01", end: "2020-03-01" },
-  { tag: "Planned", start: "2021-07-01", end: "2021-08-15" },
+  { tag: "Parents", start: "2020-12-01", end: "2020-12-28" },
+  { tag: "Meeting", start: "2021-02-01", end: "2021-03-25" },
+  { tag: "Senegal", start: "2021-06-01", end: "2021-06-20" },
+  { tag: "Germany", start: "2021-10-01", end: "2021-10-15" },
+  { tag: "Ireland", start: "2022-02-01", end: "2022-03-01" },
+  { tag: "Planned", start: "2023-04-01", end: "2023-04-15" },
 ];
 
 let prevTrips = document.cookie;
